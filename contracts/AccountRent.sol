@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 contract AccountRent {
     enum accountState {free, occupy} // free 表示账号没有被租用， occupy 表示账号正在被请求或正在被租用
