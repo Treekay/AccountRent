@@ -36,8 +36,6 @@ contract AccountRent {
 
     event notice(address, string); // 通知事件，主要用于通知交易相关人交易情况
 
-
-
     // 判断是否存在该账号并且是该账号的主人
     modifier onlyOwner(string _id) {
         require(validAccounts[_id] && accountPool[_id].ownerAddress == msg.sender,
@@ -59,7 +57,7 @@ contract AccountRent {
      */
     function createRent(string _id, uint _rentTimes) public payable {
         // 前提条件是该账号没有在被租用或者没有人正在请求该账号
-        require(accountPool[_id].state == accountState.free); 
+        require(accountPool[_id].state == accountState.free);
         // 创建新交易
         rent memory newRent = rent({
             renterAddress: msg.sender,
@@ -67,13 +65,10 @@ contract AccountRent {
             rentTimes: _rentTimes,
             state: rentState.unconfirm,
             beginTime: 0,
-            cost: accountPool[_id].price * rentPool[_id].rentTimes
+            cost: accountPool[_id].price * _rentTimes * 1 ether
         });
         // 要求账号内有足够的预订金额, 将预订金额转到合约上
-        if (msg.value < newRent.cost) {
-            emit notice(rentPool[_id].renterAddress, "Rent failed, you have no enough money to rent\n");
-            return;
-        }
+        require(msg.value == newRent.cost); 
         // 将交易放到交易池中
         rentPool[_id] = newRent;
         // 将账号状态设置为被占有，阻止其他用户同时请求租借该账号，先到先得原则，除非号主拒绝他的请求
@@ -192,6 +187,8 @@ contract AccountRent {
         require(accountPool[_id].state == accountState.free);
         // 从账号池中移除该账号
         delete accountPool[_id];
+        // 账号存在标记设为false
+        validAccounts[_id] = false;
     }
 
     /**
