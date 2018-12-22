@@ -38,15 +38,19 @@ contract AccountRent {
 
     // 判断是否存在该账号并且是该账号的主人
     modifier onlyOwner(string _id) {
-        require(validAccounts[_id] && accountPool[_id].ownerAddress == msg.sender,
-            "Please check the ID, it seems that this account isn't exist or you are not the owner of this account");
+        require(
+            validAccounts[_id] && accountPool[_id].ownerAddress == msg.sender,
+            "Please check the ID, it seems that this account isn't exist or you are not the owner of this account"
+        );
         _;
     }
 
     // 判断是否存在该账号并且是该账号当前的租借人
     modifier onlyRenter(string _id) {
-        require(validAccounts[_id] && rentPool[_id].renterAddress == msg.sender,
-            "Please check the ID, it seems that this account isn't exist or you are not the renter of this account");
+        require(
+            validAccounts[_id] && rentPool[_id].renterAddress == msg.sender,
+            "Please check the ID, it seems that this account isn't exist or you are not the renter of this account"
+        );
         _;
     }
 
@@ -57,7 +61,10 @@ contract AccountRent {
      */
     function createRent(string _id, uint _rentTimes) public payable {
         // 前提条件是该账号没有在被租用或者没有人正在请求该账号
-        require(accountPool[_id].state == accountState.free);
+        require(
+            accountPool[_id].state == accountState.free,
+            ""
+        );
         // 创建新交易
         rent memory newRent = rent({
             renterAddress: msg.sender,
@@ -68,7 +75,10 @@ contract AccountRent {
             cost: accountPool[_id].price * _rentTimes * 1 ether
         });
         // 要求账号内有足够的预订金额, 将预订金额转到合约上
-        require(msg.value == newRent.cost); 
+        require(
+            msg.value == newRent.cost,
+            ""
+        ); 
         // 将交易放到交易池中
         rentPool[_id] = newRent;
         // 将账号状态设置为被占有，阻止其他用户同时请求租借该账号，先到先得原则，除非号主拒绝他的请求
@@ -83,8 +93,10 @@ contract AccountRent {
      */
     function confirmRent(string _id) public onlyOwner(_id) returns (string) {
         // 前提条件是存在该交易
-        require(rentPool[_id].state == rentState.unconfirm); 
-
+        require(
+            rentPool[_id].state == rentState.unconfirm,
+            ""
+        ); 
         accountPool[_id].ownerAddress.transfer(rentPool[_id].cost);
         rentPool[_id].state = rentState.confirm;
         rentPool[_id].beginTime = now;
@@ -98,7 +110,10 @@ contract AccountRent {
      */
     function refuseRent(string _id) public onlyOwner(_id) {
         // 前提条件是存在该交易且该交易处于未确认状态
-        require(rentPool[_id].state == rentState.unconfirm); 
+        require(
+            rentPool[_id].state == rentState.unconfirm,
+            ""
+        ); 
 
         // 拒绝该交易，则将该交易设置为结束
         rentPool[_id].state == rentState.end;
@@ -118,9 +133,12 @@ contract AccountRent {
         // 前提条件：存在该账号，所输入的账号不是空号
         // 身份条件：如果是用户，只有当账号已确认租借给他时才能修改
         //          如果是号主，只有当账号不是正在被租用时才能修改
-        require(validAccounts[_id] && 
+        require(
+            validAccounts[_id] && 
             (accountPool[_id].ownerAddress == msg.sender && rentPool[_id].state == rentState.end) ||
-            (rentPool[_id].renterAddress == msg.sender && rentPool[_id].state == rentState.confirm));
+            (rentPool[_id].renterAddress == msg.sender && rentPool[_id].state == rentState.confirm),
+            ""
+        );
         accountPool[_id].password = _password; 
     }
 
@@ -132,9 +150,12 @@ contract AccountRent {
         // 前提条件：存在该账号，所输入的账号不是空号
         // 身份条件：如果是用户，只有当账号已确认租借给他时才能修改
         //          如果是号主，只有当账号不是正在被租用时才能修改
-        require(validAccounts[_id] && 
+        require(
+            validAccounts[_id] && 
             (accountPool[_id].ownerAddress == msg.sender && rentPool[_id].state == rentState.end) ||
-            (rentPool[_id].renterAddress == msg.sender && rentPool[_id].state == rentState.confirm));
+            (rentPool[_id].renterAddress == msg.sender && rentPool[_id].state == rentState.confirm),
+            ""
+        );
         return accountPool[_id].password;
     }
 
@@ -144,8 +165,11 @@ contract AccountRent {
      */
     function endRent(string _id) public onlyOwner(_id) {
         // 前提条件：超过租借时间，并且是账号主人
-        require(rentPool[_id].state == rentState.unconfirm ||
-            now - rentPool[_id].beginTime >= rentPool[_id].rentTimes);
+        require(
+            rentPool[_id].state == rentState.unconfirm ||
+            now - rentPool[_id].beginTime >= rentPool[_id].rentTimes,
+            ""
+        );
 
         // 修改交易状态为结束，
         rentPool[_id].state == rentState.end;
@@ -163,7 +187,10 @@ contract AccountRent {
      * param _description: 描述账号的平台类型等
      */
     function createAccount(string _id, string _password, uint _price, string _description) public {
-        require(!validAccounts[_id]); // 前提条件：账号池中原本没有该账号
+        require(
+            !validAccounts[_id],
+            ""
+        ); // 前提条件：账号池中原本没有该账号
         // 创建新账号
         account memory newAccount = account({
             ownerAddress: msg.sender,
@@ -184,7 +211,10 @@ contract AccountRent {
      * param _id: 账号号码
      */
     function removeAccount(string _id) public onlyOwner(_id) {
-        require(accountPool[_id].state == accountState.free);
+        require(
+            accountPool[_id].state == accountState.free,
+            ""
+        );
         // 从账号池中移除该账号
         delete accountPool[_id];
         // 账号存在标记设为false
@@ -197,7 +227,10 @@ contract AccountRent {
      * return accountState: 账号的状态信息
      */
     function getAccountState(string _id) public view returns (accountState) {
-        require(validAccounts[_id]); // 前提条件：该账号存在账号池中
+        require(
+            validAccounts[_id],
+            ""
+        ); // 前提条件：该账号存在账号池中
         // 返回该账号的当前状态
         return accountPool[_id].state;
     }
