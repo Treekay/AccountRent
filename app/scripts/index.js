@@ -6,10 +6,10 @@ import { default as Web3 } from 'web3'
 import { default as contract } from 'truffle-contract'
 
 // Import our contract artifacts and turn them into usable abstractions.
-import metaCoinArtifact from '../../build/contracts/MetaCoin.json'
+import AccountRentArtifact from '../../build/contracts/AccountRent.json'
 
-// MetaCoin is our usable abstraction, which we'll use through the code below.
-const MetaCoin = contract(metaCoinArtifact)
+// AccountRent is our usable abstraction, which we'll use through the code below.
+const AccountRent = contract(AccountRentArtifact)
 
 // The following code is simple to show off interacting with your contracts.
 // As your needs grow you will likely need to change its form and structure.
@@ -21,8 +21,8 @@ const App = {
   start: function () {
     const self = this
 
-    // Bootstrap the MetaCoin abstraction for Use.
-    MetaCoin.setProvider(web3.currentProvider)
+    // Bootstrap the AccountRent abstraction for Use.
+    AccountRent.setProvider(web3.currentProvider)
 
     // Get the initial account balance so it can be displayed.
     web3.eth.getAccounts(function (err, accs) {
@@ -41,48 +41,57 @@ const App = {
 
       self.refreshBalance()
     })
+
+    if ('content' in document.createElement('template')) {
+      // 使用现有的HTML tbody实例化表和该行与模板
+      let t = document.querySelector('#account');
+      let head = t.content.getElementsByClassName('panel-heading');
+      let body = t.content.getElementsByClassName('panel-body');
+      let foot = t.content.getElementsByClassName('panel-footer');
+
+      head[0].value = 'LOL账号'
+      body[0].value = '全英雄, 一区钻石3'
+      foot[0].value = '￥2/h'
+
+      // 克隆新行并将其插入表中
+      let saleBoard = document.getElementById("saleBoard");
+      let newAccount = document.importNode(t.content, true);
+      saleBoard.appendChild(newAccount);
+    }
   },
 
-  setStatus: function (message) {
-    const status = document.getElementById('status')
-    status.innerHTML = message
+  showOwnAccounts: function () {
+    const head = document.getElementById('headBoard')
+    head.innerHTML = 'My Accounts'
+
   },
 
-  refreshBalance: function () {
-    const self = this
+  showRentHistory: function () {
+    const head = document.getElementById('headBoard')
+    head.innerHTML = 'Rents History'
 
-    let meta
-    MetaCoin.deployed().then(function (instance) {
-      meta = instance
-      return meta.getBalance.call(account, { from: account })
-    }).then(function (value) {
-      const balanceElement = document.getElementById('balance')
-      balanceElement.innerHTML = value.valueOf()
-    }).catch(function (e) {
-      console.log(e)
-      self.setStatus('Error getting balance; see log.')
-    })
   },
 
-  sendCoin: function () {
-    const self = this
+  toHomePage: function () {
+    const head = document.getElementById('headBoard')
+    head.innerHTML = 'On Sale'
 
-    const amount = parseInt(document.getElementById('amount').value)
-    const receiver = document.getElementById('receiver').value
+  },
 
-    this.setStatus('Initiating transaction... (please wait)')
+  toLoginPage: function() {
 
-    let meta
-    MetaCoin.deployed().then(function (instance) {
-      meta = instance
-      return meta.sendCoin(receiver, amount, { from: account })
-    }).then(function () {
-      self.setStatus('Transaction complete!')
-      self.refreshBalance()
-    }).catch(function (e) {
-      console.log(e)
-      self.setStatus('Error sending coin; see log.')
-    })
+  },
+
+  toDetailPage: function() {
+    const head = document.getElementById('headBoard')
+    head.innerHTML = 'Details'
+
+  },
+
+  checkInforms: function() {
+    const head = document.getElementById('headBoard')
+    head.innerHTML = 'Informs'
+
   }
 }
 
@@ -93,7 +102,7 @@ window.addEventListener('load', function () {
   if (typeof web3 !== 'undefined') {
     console.warn(
       'Using web3 detected from external source.' +
-      ' If you find that your accounts don\'t appear or you have 0 MetaCoin,' +
+      ' If you find that your accounts don\'t appear or you have 0 AccountRent,' +
       ' ensure you\'ve configured that source properly.' +
       ' If using MetaMask, see the following link.' +
       ' Feel free to delete this warning. :)' +
