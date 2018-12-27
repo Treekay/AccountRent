@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.4.18;
 
 contract AccountRent {
     // free 表示账号没有被租用， occupy 表示账号正在被请求或正在被租用
@@ -21,6 +21,7 @@ contract AccountRent {
         string id;              // 账号号码
         string password;        // 账号密码
         uint price;             // 账号单位时间的租借价格
+        string accountType;     // 账号类型
         string description;     // 描述该账号
         accountState state;     // 账号的当前状态
     }
@@ -34,7 +35,8 @@ contract AccountRent {
     // 账号合法判断，用于判断账号池内是否存在该账号
     mapping(string => bool) validAccounts;
 
-    event notice(address, string); // 通知事件，主要用于通知交易相关人交易情况
+    // 通知事件，主要用于通知交易相关人交易情况
+    event notice(address addr, string message);
 
     // 判断是否存在该账号并且是该账号的主人
     modifier onlyOwner(string _id) {
@@ -162,7 +164,7 @@ contract AccountRent {
      * param _price: 单位时间的价格
      * param _description: 描述账号的平台类型等
      */
-    function createAccount(string _id, string _password, uint _price, string _description) public {
+    function createAccount(string _id, string _password, uint _price, string _accountType, string _description) public {
         require(!validAccounts[_id]); // 前提条件：账号池中原本没有该账号
         // 创建新账号
         account memory newAccount = account({
@@ -170,6 +172,7 @@ contract AccountRent {
             id: _id,
             password: _password,
             price: _price,
+            accountType: _accountType,
             description: _description,
             state: accountState.free
         });
