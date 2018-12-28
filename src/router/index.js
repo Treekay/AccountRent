@@ -1,13 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import accountList from '@/components/account-table'
-import accountManage from '@/components/account-manage'
+import accountMine from '@/components/account-mine'
+import accountCreate from '@/components/account-create'
 import accountBuy from '@/components/account-buy'
 import accountSale from '@/components/account-sale'
-import rentList from '@/components/rent-table'
+import rentTable from '@/components/rent-table'
 import loginForm from '@/components/login-form'
 import notify from '@/components/notify-table'
 import topNav from '@/components/top-nav'
+import history from '@/components/rent-history'
 
 Vue.use(Router)
 
@@ -21,15 +22,22 @@ export default new Router({
       path: '/myAccounts',
       components: {
         header: topNav,
-        default: accountList,
-        rightPart: accountManage
+        default: accountMine,
+        rightPart: accountCreate
       }
     },
     {
       path: '/myRents',
       components: {
         header: topNav,
-        default: rentList
+        default: rentTable
+      }
+    },
+    {
+      path: '/history',
+      components: {
+        header: topNav,
+        default: history
       }
     },
     {

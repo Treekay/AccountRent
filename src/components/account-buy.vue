@@ -9,7 +9,7 @@
         <input class="detailBox"/>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" class="btn btn-block btn-lg">确认</el-button>
+        <el-button type="primary" class="btn btn-block btn-lg" @click="submit">确认</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -21,9 +21,24 @@ export default {
   data () {
     return {
       account: '',
-      price: '',
-      rentTime: '',
-      description: ''
+      rentTime: ''
+    }
+  },
+  methods: {
+    notify (_title, _msg) {
+      this.$notify({
+        title: _title,
+        message: _msg
+      })
+    },
+    async submit () {
+      await this.$web3.eth.unlockAcccount(this.$useraddr, this.$password)
+      let tmpAccountPrice = await this.$instance.accountPool(this.account).price * this.rentTime
+      await this.$instance.createRent.sendTransaction(this.account, this.rentTime, {
+        from: this.$sponsor, value: this.$web3.fromWei(tmpAccountPrice)
+      })
+      this.notify('通知', '预订发送成功')
+      this.$router.push('/homePage')
     }
   }
 }

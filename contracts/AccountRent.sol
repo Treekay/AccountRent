@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.17;
 
 contract AccountRent {
     // free 表示账号没有被租用， occupy 表示账号正在被请求或正在被租用
@@ -10,8 +10,9 @@ contract AccountRent {
     struct rent {
         address renterAddress;  // 租借人的地址信息
         string id;              // 租借的账号号码
-        uint rentTimes;         // 租借的时长
+        uint rentTime;          // 租借的时长
         uint beginTime;         // 租借的开始时间
+        uint endTime;           // 租借结束时间
         uint cost;              // 租借总费用
         rentState state;        // 该笔交易当前所处的状态
     }
@@ -27,39 +28,56 @@ contract AccountRent {
     }
 
     account[] accountList;
+    rent[] rentList;
 
     // 用户合法判断，用于是否存在该用户
-    mapping(string => bool) validUsers;
+    mapping (string => bool) checkUserExist;
 
-    mapping(string => address) userToAddress;
+    mapping (string => address) userToAddress;
 
     // 用户密码判断
-    mapping(string => string) userPassword;
+    mapping (string => string) checkPassword;
 
-    function checkUserValid(string _username) public view returns (bool) {
-        return validUsers[_username];
+    function getUserAddress(string _username) public view returns (address) {
+        return userToAddress(_username);
+    }
+
+    function getRents() public view returns (rent[]) {
+        return rentList;
+    }
+
+    function getAccounts() public view returns (account[]) {
+        return accountList;
+    }
+
+    function getWaitingRentNum(string _username) public view returns (uint) {
+        return waitingRent(_username);
+    }
+
+    function checkUserExistValid(string _username) public view returns (bool) {
+        return checkUserExist[_username];
     }
 
     function regist(string _username, string _password, address _userAddress) public {
-        if (validUsers[_username] == false) {
-            validUsers[_username] = true;
-            userPassword[_username] = _password;
+        if (checkUserExist[_username] == false) {
+            checkUserExist[_username] = true;
+            checkPassword[_username] = _password;
             userToAddress[_username] = _userAddress;
         }
     }
 
-    function loginCheck(string _username) public returns (string) {
+    function loginCheck(string _username) public view returns (string) {
         return userPassword[_username];
     }
 
     // 账号池，存有该合约上所有的账号
-    mapping(string => account) accountPool;
+    mapping (string => account) accountPool;
 
     // 交易池，存有该合约上每个存在的账号最近的一次交易信息
-    mapping(string => rent) rentPool;
+    mapping (string => rent) rentPool;
 
     // 账号合法判断，用于判断账号池内是否存在该账号
-    mapping(string => bool) validAccounts;
+    mapping (string => bool) validAccounts;
 
     // 通知事件，主要用于通知交易相关人交易情况
     event notice(address addr, string message);
@@ -81,19 +99,20 @@ contract AccountRent {
     /**
      * description: 发起租借某个账号的请求，所有人都能调用这个函数
      * param _id: 要租借的账号
-     * param _rentTimes: 要租借的时长，这里用的是秒，应用页面选择中可以选择分钟/小时/天等，转换成秒数再传递给该函数
+     * param _rentTime: 要租借的时长，这里用的是秒，应用页面选择中可以选择分钟/小时/天等，转换成秒数再传递给该函数
      */
-    function createRent(string _id, uint _rentTimes) public payable {
+    function createRent(string _id, uint _rentTime) public payable {
         // 前提条件是该账号没有在被租用或者没有人正在请求该账号
         require(accountPool[_id].state == accountState.free);
         // 创建新交易
         rent memory newRent = rent({
             renterAddress: msg.sender,
             id: _id,
-            rentTimes: _rentTimes,
+            rentTime: _rentTime,
             state: rentState.unconfirm,
             beginTime: 0,
-            cost: accountPool[_id].price * _rentTimes * 1 ether
+            endTime: 0,
+            cost: accountPool[_id].price * _rentTime * 1 ether
         });
         // 要求账号内有足够的预订金额, 将预订金额转到合约上
         require(msg.value == newRent.cost); 
@@ -116,6 +135,7 @@ contract AccountRent {
         accountPool[_id].ownerAddress.transfer(rentPool[_id].cost);
         rentPool[_id].state = rentState.confirm;
         rentPool[_id].beginTime = now;
+        rentPool[_id].endTime = now + rentPool[_id].rentTime;
         // 自动生成密码
         emit notice(rentPool[_id].renterAddress, "Rent success, please change password by yourself\n");
     }
@@ -170,10 +190,11 @@ contract AccountRent {
      * description: 标记交易结束，只有当超过租借时间之后，账号主人才能调用该函数
      * param _id: 账号号码
      */
-    function endRent(string _id) public onlyOwner(_id) {
+    function endRent(string _id) public {
         // 前提条件：超过租借时间，并且是账号主人
-        require(rentPool[_id].state == rentState.unconfirm ||
-            now - rentPool[_id].beginTime >= rentPool[_id].rentTimes);
+        require(validAccounts[_id] && accountPool[_id].ownerAddress == msg.sender &&
+            (rentPool[_id].state == rentState.unconfirm || now - rentPool[_id].beginTime >= rentPool[_id].rentTime) ||
+            validAccounts[_id] && rentPool[_id].renterAddress == msg.sender);
 
         // 修改交易状态为结束，
         rentPool[_id].state == rentState.end;
@@ -202,6 +223,7 @@ contract AccountRent {
             description: _description,
             state: accountState.free
         });
+        accountList.push(newAccount);
         // 发布到账号池中
         accountPool[_id] = newAccount;
         // 将账号的存在判断置为真

@@ -14,8 +14,8 @@
           </el-form-item>
         </el-tab-pane>
         <el-tab-pane label='注册' class='rightMargin' name='regist'>
-          <el-form-item label='用户名' v-model="user">
-            <el-input></el-input>
+          <el-form-item label='用户名'>
+            <el-input v-model="user"></el-input>
           </el-form-item>
           <el-form-item label='密码'>
             <el-input type='password' autocomplete='off' v-model="pass"></el-input>
@@ -51,7 +51,7 @@ export default {
       })
     },
     checkUser () {
-      if (!this.user) {
+      if (this.user.length === 0) {
         this.notify('通知', '用户名不能为空')
         return false
       } else if (this.user.length < 5) {
@@ -62,7 +62,7 @@ export default {
       }
     },
     checkPass () {
-      if (!this.pass) {
+      if (this.pass.length === 0) {
         this.notify('通知', '密码不能为空')
         return false
       } else {
@@ -73,7 +73,7 @@ export default {
       if (this.state === 'login') {
         return true
       } else {
-        if (!this.pass2) {
+        if (this.pass2.length === 0) {
           this.notify('通知', '请输入确认密码')
           return false
         } else if (this.pass2 !== this.pass) {
@@ -96,24 +96,36 @@ export default {
     },
     async signIn (formName) {
       if (this.checkUser() && this.checkPass()) {
-        console.log(this.$contract)
-        let truePassword = await this.$contract.loginCheck(this.user, {from: '0x4551f4742046b365cb3d74327c459627b54a60bb'})
-        if (truePassword === this.pass) {
-          this.notify('通知', '登录成功')
-          this.$router.push('/homePage')
+        const self = this
+        let exist = await self.$instance.checkUserExist(self.user)
+        if (exist === true) {
+          let truePassword = await self.$instance.checkPassword(self.user)
+          if (truePassword === self.pass) {
+            self.$router.push('/homePage')
+            self.$username = self.user
+            self.$password = self.pass
+            self.$useraddr = await self.$instance.userToAddress(self.user)
+          } else {
+            self.notify('通知', '密码错误')
+          }
         } else {
-          this.notify('通知', '密码错误')
+          self.notify('通知', '该用户名不存在')
         }
       }
     },
     async signUp (formName) {
       if (this.checkUser() && this.checkPass() && this.checkPass2()) {
-        let exist = await this.$contract.checkUserExist(this.user, {from: '0xA3C90D5a5Cd1dC3e1D2a1737c68CBf9bdC507c0a'})
+        const self = this
+        let exist = await self.$instance.checkUserExist(self.user)
         if (exist === false) {
-          if (this.$contract.regist(this.user, this.pass) === true) {
-            this.notify('通知', '注册成功')
-            this.$router.push('/homePage')
-          }
+          let newAccountAddress = await self.$web3.eth.personal.newAccount(this.pass)
+          self.$instance.regist(self.user, self.pass, newAccountAddress, { from: self.$sponsor }).then(() => {
+            self.notify('通知', '注册成功')
+            self.$router.push('/homePage')
+            self.$username = self.user
+            self.$password = self.pass
+            self.$useraddr = newAccountAddress
+          })
         } else {
           this.notify('通知', '用户名已被注册')
         }

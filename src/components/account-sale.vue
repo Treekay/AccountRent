@@ -11,26 +11,19 @@
         width="120px">
       </el-table-column>
       <el-table-column
-        prop="description"
+        prop="accountType"
         label="账号类型"
         width="120px">
       </el-table-column>
       <el-table-column
         prop="description"
         label="账号描述"
-        width="250px">
+        width="300px">
       </el-table-column>
       <el-table-column
         prop="price"
         label="价格"
         width="100px">
-      </el-table-column>
-      <el-table-column
-        label="操作"
-        width="60px">
-        <template slot-scope="scope">
-          <el-button type="text" size="small">添加</el-button>
-        </template>
       </el-table-column>
     </el-table>
   </div>
@@ -39,49 +32,22 @@
 <script>
 export default {
   name: 'accountSale',
-  data () {
-    return {
-      tableData: [{
-        account: '823334594',
-        description: '666',
-        accountStatus: '空闲',
-        price: '20'
-      }, {
-        account: '2295507969',
-        description: '666',
-        accountStatus: '空闲',
-        price: '20'
-      }, {
-        account: '3188088288',
-        description: '666',
-        accountStatus: '空闲',
-        price: '20'
-      }, {
-        account: '72930215',
-        description: '666',
-        accountStatus: '空闲',
-        price: '20'
-      }, {
-        account: '85255563',
-        description: '666',
-        accountStatus: '空闲',
-        price: '20'
-      }, {
-        account: '633325112',
-        description: '666',
-        accountStatus: '空闲',
-        price: '20'
-      }, {
-        account: '889554631',
-        description: '666',
-        accountStatus: '空闲',
-        price: '20'
-      }]
+  mounted: async () => {
+    let accounts = await this.$instance.getAccounts()
+    for (let i = 0; i < accounts.length; i++) {
+      if (accounts[i].state === 0) {
+        this.tableData.append({
+          account: accounts[i].id,
+          accountType: accounts[i].accountType,
+          description: accounts[i].description,
+          price: accounts[i].price
+        })
+      }
     }
   },
-  methods: {
-    getMyAccounts () {
-
+  data () {
+    return {
+      tableData: []
     }
   }
 }
