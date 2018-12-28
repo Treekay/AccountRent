@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h2>交易记录</h2>
+    <h2>租借请求</h2>
     <el-table
       :data="tableData"
       stripe
@@ -11,34 +11,25 @@
         width="120px">
       </el-table-column>
       <el-table-column
-        prop="rentType"
-        label="交易类型"
-        width="100px">
+        prop="rentTime"
+        label="租借时长"
+        width="200px">
       </el-table-column>
       <el-table-column
-        prop="startTime"
-        label="开始时间"
-        width="180px">
-      </el-table-column>
-      <el-table-column
-        prop="endTime"
-        label="到期时间"
-        width="180px">
+        prop="cost"
+        label="金额"
+        width="80px">
       </el-table-column>
       <el-table-column
         prop="commit"
         label="备注">
       </el-table-column>
       <el-table-column
-        prop="rentStatus"
-        label="交易状态"
-        width="100px">
-      </el-table-column>
-      <el-table-column
         label="操作"
         width="100px">
         <template slot-scope="scope">
-          <el-button type="text" size="small">确认</el-button>
+          <el-button type="text" size="small">同意</el-button>
+          <el-button type="text" size="small">拒绝</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -47,7 +38,7 @@
 
 <script>
 export default {
-  name: 'rentList',
+  name: 'notify',
   data () {
     return {
       tableData: [{

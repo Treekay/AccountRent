@@ -26,6 +26,32 @@ contract AccountRent {
         accountState state;     // 账号的当前状态
     }
 
+    account[] accountList;
+
+    // 用户合法判断，用于是否存在该用户
+    mapping(string => bool) validUsers;
+
+    mapping(string => address) userToAddress;
+
+    // 用户密码判断
+    mapping(string => string) userPassword;
+
+    function checkUserValid(string _username) public view returns (bool) {
+        return validUsers[_username];
+    }
+
+    function regist(string _username, string _password, address _userAddress) public {
+        if (validUsers[_username] == false) {
+            validUsers[_username] = true;
+            userPassword[_username] = _password;
+            userToAddress[_username] = _userAddress;
+        }
+    }
+
+    function loginCheck(string _username) public returns (string) {
+        return userPassword[_username];
+    }
+
     // 账号池，存有该合约上所有的账号
     mapping(string => account) accountPool;
 

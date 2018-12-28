@@ -1,17 +1,14 @@
 <template>
   <div id="app">
-    <top-nav></top-nav>
+    <router-view name="header"></router-view>
     <router-view></router-view>
+    <router-view name="rightPart"></router-view>
   </div>
 </template>
 
 <script>
-import topNav from '@/components/top-nav'
 export default {
-  name: 'App',
-  components: {
-    'top-nav': topNav
-  }
+  name: 'App'
 }
 </script>
 
@@ -24,6 +21,5 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  /* color: #2c3e50; */
 }
 </style>

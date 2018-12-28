@@ -1,6 +1,6 @@
 <template>
   <div class="leftPart">
-    <h2 id="headline">我的账号</h2>
+    <h2 id="headline">在售账号</h2>
     <el-table
       :data="tableData"
       stripe
@@ -11,8 +11,8 @@
         width="120px">
       </el-table-column>
       <el-table-column
-        prop="accountStatus"
-        label="账号状态"
+        prop="description"
+        label="账号类型"
         width="120px">
       </el-table-column>
       <el-table-column
@@ -29,7 +29,7 @@
         label="操作"
         width="60px">
         <template slot-scope="scope">
-          <el-button type="text" size="small">删除</el-button>
+          <el-button type="text" size="small">添加</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -38,7 +38,7 @@
 
 <script>
 export default {
-  name: 'accountList',
+  name: 'accountSale',
   data () {
     return {
       tableData: [{

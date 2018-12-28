@@ -5,14 +5,20 @@
         <router-link to="homePage" class="navbar-brand">AccountRent</router-link>
       </div>
       <ul class="nav navbar-nav">
-        <li><router-link to="myAccounts">myAccounts</router-link></li>
-        <li><router-link to="myRents">myRents</router-link></li>
+        <li><router-link to="myAccounts">我的账号</router-link></li>
+        <li><router-link to="myRents">交易记录</router-link></li>
       </ul>
-      <form class="navbar-form navbar-left">
+      <form class="navbar-form navbar-right">
+        <router-link to="notify">
+          <el-badge :value="3" class="item">
+            <el-button size="small">通知</el-button>
+          </el-badge>
+        </router-link>
+      </form>
+      <form class="navbar-form navbar-right">
         <div class="form-group">
-          <input type="text" class="form-control" id="searchbox" :value="searchText">
+          <input type="text" class="form-control" :value="searchText" placeholder="搜索">
         </div>
-        <button type="submit" class="btn btn-default" @click="searchSaleAccounts()">Search</button>
       </form>
     </div>
   </div>
@@ -44,3 +50,10 @@ export default {
   }
 }
 </script>
+
+<style>
+#notify {
+  text-decoration-line: none;
+  color: gray;
+}
+</style>
