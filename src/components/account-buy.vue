@@ -62,6 +62,6 @@ export default {
   text-align: left;
   line-height: 40px;
   vertical-align: middle;
-  /*border: lightgray solid 1px;*/
+  border: lightgray solid 1px;
 }
 </style>

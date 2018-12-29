@@ -28,22 +28,25 @@
 <script>
 export default {
   name: 'topNav',
-  mounted: async () => {
-    this.notifyNum = 0
-    let allRents = await this.$instance.getRents()
-    for (var i = 0; i < allRents.length; i++) {
-      if (allRents.state === 0) {
-        let owner = await this.$instance.getAccount(allRents[i].id)
-        let ownerAddress = await this.$instance.getUserAddress(owner)
-        if (ownerAddress === this.$useraddr) {
-          this.notifyNum++
-        }
-      }
-    }
-  },
   data () {
     return {
-      notifyNum: 0
+      notifyNum: this.init()
+    }
+  },
+  methods: {
+    async init () {
+      let notifyNum = 0
+      let allRents = await this.$instance.getRents()
+      for (var i = 0; i < allRents.length; i++) {
+        if (allRents.state === 0) {
+          let owner = await this.$instance.getAccount(allRents[i].id)
+          let ownerAddress = await this.$instance.getUserAddress(owner)
+          if (ownerAddress === this.$useraddr) {
+            notifyNum++
+          }
+        }
+      }
+      return notifyNum
     }
   }
 }

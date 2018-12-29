@@ -99,12 +99,12 @@ export default {
         const self = this
         let exist = await self.$instance.checkUserExist(self.user)
         if (exist === true) {
-          let truePassword = await self.$instance.checkPassword(self.user)
+          let truePassword = await self.$instance.loginCheck(self.user)
           if (truePassword === self.pass) {
-            self.$router.push('/homePage')
             self.$username = self.user
             self.$password = self.pass
             self.$useraddr = await self.$instance.getUserAddress(self.user)
+            self.$router.push('/homePage')
           } else {
             self.notify('通知', '密码错误')
           }
@@ -121,10 +121,10 @@ export default {
           let newAccountAddress = await self.$web3.eth.personal.newAccount(this.pass)
           self.$instance.regist(self.user, self.pass, newAccountAddress, { from: self.$sponsor }).then(() => {
             self.notify('通知', '注册成功')
-            self.$router.push('/homePage')
             self.$username = self.user
             self.$password = self.pass
             self.$useraddr = newAccountAddress
+            self.$router.push('/homePage')
           })
         } else {
           this.notify('通知', '用户名已被注册')

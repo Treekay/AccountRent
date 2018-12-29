@@ -15,26 +15,29 @@
 <script>
 export default {
   name: 'rentTable',
-  mounted: async () => {
-    this.tableData = []
-    let allRents = await this.$instance.getRents()
-    for (var i = 0; i < allRents.length; i++) {
-      if (allRents[i].renterAddress === this.$useraddr && allRents.state === 1) {
-        let tmpAccount = await this.$instance.getAccount(allRents[i].id)
-        this.tableData.append({
-          account: tmpAccount.id,
-          accountType: tmpAccount.accountType,
-          password: tmpAccount.password,
-          startTime: allRents[i].beginTime,
-          endTime: allRents[i].endTime,
-          description: tmpAccount.description
-        })
-      }
-    }
-  },
   data () {
     return {
-      tableData: []
+      tableData: this.init()
+    }
+  },
+  methods: {
+    async init () {
+      let tableData = []
+      let allRents = await this.$instance.getRents()
+      for (var i = 0; i < allRents.length; i++) {
+        if (allRents[i].renterAddress === this.$useraddr && allRents.state === 1) {
+          let tmpAccount = await this.$instance.getAccount(allRents[i].id)
+          tableData.append({
+            account: tmpAccount.id,
+            accountType: tmpAccount.accountType,
+            password: tmpAccount.password,
+            startTime: allRents[i].beginTime,
+            endTime: allRents[i].endTime,
+            description: tmpAccount.description
+          })
+        }
+      }
+      return tableData
     }
   }
 }

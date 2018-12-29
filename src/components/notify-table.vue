@@ -19,30 +19,31 @@
 <script>
 export default {
   name: 'notify',
-  mounted: async () => {
-    this.tableData = []
-    let tmpRents = await this.$instance.getRents()
-    for (var i = 0; i < tmpRents.length; i++) {
-      if (tmpRents[i].state === 0) {
-        let owner = await this.$instance.getAccount(tmpRents[i].id)
-        let ownerAddress = await this.$instance.getUserAddress(owner)
-        if (ownerAddress === this.$useraddr) {
-          this.tableData.append({
-            account: tmpRents[i].id,
-            rentTime: tmpRents[i].rentTime,
-            cost: tmpRents[i].cost,
-            renter: tmpRents[i].renterAddress
-          })
-        }
-      }
-    }
-  },
   data () {
     return {
-      tableData: []
+      tableData: this.init()
     }
   },
   methods: {
+    async init () {
+      let tableData = []
+      let tmpRents = await this.$instance.getRents()
+      for (var i = 0; i < tmpRents.length; i++) {
+        if (tmpRents[i].state === 0) {
+          let owner = await this.$instance.getAccount(tmpRents[i].id)
+          let ownerAddress = await this.$instance.getUserAddress(owner)
+          if (ownerAddress === this.$useraddr) {
+            tableData.append({
+              account: tmpRents[i].id,
+              rentTime: tmpRents[i].rentTime,
+              cost: tmpRents[i].cost,
+              renter: tmpRents[i].renterAddress
+            })
+          }
+        }
+      }
+      return tableData
+    },
     async agree (index, rows) {
       await this.$web3.eth.unlockAccount(this.$useraddr, this.$password)
       await this.$instance.confirmRent(rows[index].account, { from: this.$useraddr })

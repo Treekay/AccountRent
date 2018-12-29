@@ -42,6 +42,6 @@ export default {
     })
 
     // 合约发起人地址
-    Vue.prototype.$sponsor = '0x4551f4742046b365cb3d74327c459627b54a60bb'
+    Vue.prototype.$sponsor = '0xf9a1ff3a235cd6020bf710e6a893a53776efcb5d'
   }
 }

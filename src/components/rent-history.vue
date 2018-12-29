@@ -20,45 +20,46 @@
 <script>
 export default {
   name: 'history',
-  mounted: async () => {
-    this.tableData = []
-    let allRents = await this.$instance.getRents()
-    for (var i = 0; i < allRents.length; i++) {
-      let tmpAccount = await this.$instance.getAccount(allRents[i].id)
-      if (allRents[i].state === 1) {
-        if (allRents[i].renterAddress === this.$useraddr || tmpAccount.ownerAddress === this.$useraddr) {
-          let tmpRentType
-          if (tmpAccount.ownerAddress === this.$useraddr) {
-            tmpRentType = '借出'
-          } else {
-            tmpRentType = '借入'
-          }
-          let tmpRentState
-          if ((new Date()).valueOf() >= allRents[i].endTime) {
-            tmpRentState = '已到期'
-          } else {
-            tmpRentState = '使用中'
-          }
-          this.tableData.append({
-            account: tmpAccount.id,
-            rentType: tmpRentType,
-            startTime: allRents[i].beginTime,
-            endTime: allRents[i].endTime,
-            accountType: tmpAccount.accountType,
-            cost: allRents[i].cost,
-            rentState: tmpRentState,
-            description: tmpAccount.description
-          })
-        }
-      }
-    }
-  },
   data () {
     return {
-      tableData: []
+      tableData: this.init()
     }
   },
   methods: {
+    async init () {
+      let tableData = []
+      let allRents = await this.$instance.getRents()
+      for (var i = 0; i < allRents.length; i++) {
+        let tmpAccount = await this.$instance.getAccount(allRents[i].id)
+        if (allRents[i].state === 1) {
+          if (allRents[i].renterAddress === this.$useraddr || tmpAccount.ownerAddress === this.$useraddr) {
+            let tmpRentType
+            if (tmpAccount.ownerAddress === this.$useraddr) {
+              tmpRentType = '借出'
+            } else {
+              tmpRentType = '借入'
+            }
+            let tmpRentState
+            if ((new Date()).valueOf() >= allRents[i].endTime) {
+              tmpRentState = '已到期'
+            } else {
+              tmpRentState = '使用中'
+            }
+            tableData.append({
+              account: tmpAccount.id,
+              rentType: tmpRentType,
+              startTime: allRents[i].beginTime,
+              endTime: allRents[i].endTime,
+              accountType: tmpAccount.accountType,
+              cost: allRents[i].cost,
+              rentState: tmpRentState,
+              description: tmpAccount.description
+            })
+          }
+        }
+      }
+      return tableData
+    },
     notify (_title, _msg) {
       this.$notify({
         title: _title,

@@ -18,32 +18,33 @@
 <script>
 export default {
   name: 'accountMine',
-  mounted: async function () {
-    this.tableData = []
-    let accounts = await this.$instance.getAccounts()
-    for (let i = 0; i < accounts.length; i++) {
-      if (accounts[i].ownerAddress === this.$useraddr) {
-        let tmpAccountState
-        if (accounts[i].accountState === 0) {
-          tmpAccountState = '空闲'
-        } else {
-          tmpAccountState = '租用中'
-        }
-        this.tableData.append({
-          account: accounts[i].id,
-          accountState: tmpAccountState,
-          description: accounts[i].description,
-          price: accounts[i].price
-        })
-      }
-    }
-  },
   data () {
     return {
-      tableData: []
+      tableData: this.init()
     }
   },
   methods: {
+    async init () {
+      let tableData = []
+      let accounts = await this.$instance.getAccounts()
+      for (let i = 0; i < accounts.length; i++) {
+        if (accounts[i].ownerAddress === this.$useraddr) {
+          let tmpAccountState
+          if (accounts[i].accountState === 0) {
+            tmpAccountState = '空闲'
+          } else {
+            tmpAccountState = '租用中'
+          }
+          tableData.append({
+            account: accounts[i].id,
+            accountState: tmpAccountState,
+            description: accounts[i].description,
+            price: accounts[i].price
+          })
+        }
+      }
+      return tableData
+    },
     notify (_title, _msg) {
       this.$notify({
         title: _title,

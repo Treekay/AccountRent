@@ -13,22 +13,26 @@
 <script>
 export default {
   name: 'accountSale',
-  mounted: async () => {
-    let accounts = await this.$instance.getAccounts()
-    for (let i = 0; i < accounts.length; i++) {
-      if (accounts[i].state === 0) {
-        this.tableData.append({
-          account: accounts[i].id,
-          accountType: accounts[i].accountType,
-          description: accounts[i].description,
-          price: accounts[i].price
-        })
-      }
-    }
-  },
   data () {
     return {
-      tableData: []
+      tableData: this.init()
+    }
+  },
+  methods: {
+    async init () {
+      let tableData = []
+      let accounts = await this.$instance.getAccounts()
+      for (let i = 0; i < accounts.length; i++) {
+        if (accounts[i].state === 0) {
+          tableData.append({
+            account: accounts[i].id,
+            accountType: accounts[i].accountType,
+            description: accounts[i].description,
+            price: accounts[i].price
+          })
+        }
+      }
+      return tableData
     }
   }
 }
