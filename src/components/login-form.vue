@@ -104,7 +104,7 @@ export default {
             self.$router.push('/homePage')
             self.$username = self.user
             self.$password = self.pass
-            self.$useraddr = await self.$instance.userToAddress(self.user)
+            self.$useraddr = await self.$instance.getUserAddress(self.user)
           } else {
             self.notify('通知', '密码错误')
           }

@@ -1,4 +1,5 @@
 pragma solidity ^0.4.17;
+pragma experimental ABIEncoderV2;
 
 contract AccountRent {
     // free 表示账号没有被租用， occupy 表示账号正在被请求或正在被租用
@@ -31,7 +32,7 @@ contract AccountRent {
     rent[] rentList;
 
     // 用户合法判断，用于是否存在该用户
-    mapping (string => bool) checkUserExist;
+    mapping (string => bool) checkUser;
 
     mapping (string => address) userToAddress;
 
@@ -39,35 +40,39 @@ contract AccountRent {
     mapping (string => string) checkPassword;
 
     function getUserAddress(string _username) public view returns (address) {
-        return userToAddress(_username);
+        return userToAddress[_username];
     }
 
     function getRents() public view returns (rent[]) {
         return rentList;
     }
 
+    function getAccount(string _username) public view returns (account) {
+        return accountPool[_username];
+    }
+
     function getAccounts() public view returns (account[]) {
         return accountList;
     }
 
-    function getWaitingRentNum(string _username) public view returns (uint) {
-        return waitingRent(_username);
+    function checkAccountExist(string _account) public view returns (bool) {
+        return validAccounts[_account];
     }
 
-    function checkUserExistValid(string _username) public view returns (bool) {
-        return checkUserExist[_username];
+    function checkUserExist(string _username) public view returns (bool) {
+        return checkUser[_username];
     }
 
     function regist(string _username, string _password, address _userAddress) public {
-        if (checkUserExist[_username] == false) {
-            checkUserExist[_username] = true;
+        if (checkUser[_username] == false) {
+            checkUser[_username] = true;
             checkPassword[_username] = _password;
             userToAddress[_username] = _userAddress;
         }
     }
 
     function loginCheck(string _username) public view returns (string) {
-        return userPassword[_username];
+        return checkPassword[_username];
     }
 
     // 账号池，存有该合约上所有的账号

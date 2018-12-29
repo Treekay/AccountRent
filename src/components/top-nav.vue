@@ -30,11 +30,11 @@ export default {
   name: 'topNav',
   mounted: async () => {
     this.notifyNum = 0
-    let tmpRents = await this.$instance.waitingRent(this.$username)
-    for (var i = 0; i < tmpRents.length; i++) {
-      if (tmpRents.state === 0) {
-        let owner = await this.$instance.accountPool(tmpRents[i].id)
-        let ownerAddress = await this.$instance.userToAdderss(owner)
+    let allRents = await this.$instance.getRents()
+    for (var i = 0; i < allRents.length; i++) {
+      if (allRents.state === 0) {
+        let owner = await this.$instance.getAccount(allRents[i].id)
+        let ownerAddress = await this.$instance.getUserAddress(owner)
         if (ownerAddress === this.$useraddr) {
           this.notifyNum++
         }

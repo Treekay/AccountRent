@@ -42,7 +42,8 @@ export default {
     },
     async create () {
       await this.$web3.eth.unlockAccount(this.$useraddr, this.$password)
-      if (this.$instance.validAccounts(this.account)) {
+      let accountExist = await this.$instance.checkAccountExist(this.account)
+      if (accountExist) {
         let randomPass = Math.random().toString(36).substr(2)
         await this.$instance.createAccount(this.account, randomPass, this.price, this.accountType, this.description, { from: this.$useraddr })
         this.$router.push('/myAccounts')

@@ -33,7 +33,7 @@ export default {
     },
     async submit () {
       await this.$web3.eth.unlockAcccount(this.$useraddr, this.$password)
-      let tmpAccountPrice = await this.$instance.accountPool(this.account).price * this.rentTime
+      let tmpAccountPrice = await this.$instance.getAccount(this.account).price * this.rentTime
       await this.$instance.createRent.sendTransaction(this.account, this.rentTime, {
         from: this.$sponsor, value: this.$web3.fromWei(tmpAccountPrice)
       })

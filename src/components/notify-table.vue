@@ -21,11 +21,11 @@ export default {
   name: 'notify',
   mounted: async () => {
     this.tableData = []
-    let tmpRents = await this.$instance.waitingRent(this.$username)
+    let tmpRents = await this.$instance.getRents()
     for (var i = 0; i < tmpRents.length; i++) {
-      if (tmpRents.state === 0) {
-        let owner = await this.$instance.accountPool(tmpRents[i].id)
-        let ownerAddress = await this.$instance.userToAdderss(owner)
+      if (tmpRents[i].state === 0) {
+        let owner = await this.$instance.getAccount(tmpRents[i].id)
+        let ownerAddress = await this.$instance.getUserAddress(owner)
         if (ownerAddress === this.$useraddr) {
           this.tableData.append({
             account: tmpRents[i].id,

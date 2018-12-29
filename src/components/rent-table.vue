@@ -20,7 +20,7 @@ export default {
     let allRents = await this.$instance.getRents()
     for (var i = 0; i < allRents.length; i++) {
       if (allRents[i].renterAddress === this.$useraddr && allRents.state === 1) {
-        let tmpAccount = await this.$instance.accountPool(allRents[i].id)
+        let tmpAccount = await this.$instance.getAccount(allRents[i].id)
         this.tableData.append({
           account: tmpAccount.id,
           accountType: tmpAccount.accountType,

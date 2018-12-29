@@ -1,33 +1,12 @@
 <template>
   <div class="leftPart">
     <h2 id="headline">我的账号</h2>
-    <el-table
-      :data="tableData"
-      stripe
-      style="width: 100%">
-      <el-table-column
-        prop="account"
-        label="账号"
-        width="120px">
-      </el-table-column>
-      <el-table-column
-        prop="accountState"
-        label="账号状态"
-        width="120px">
-      </el-table-column>
-      <el-table-column
-        prop="description"
-        label="账号描述"
-        width="250px">
-      </el-table-column>
-      <el-table-column
-        prop="price"
-        label="价格"
-        width="100px">
-      </el-table-column>
-      <el-table-column
-        label="操作"
-        width="60px">
+    <el-table :data="tableData" stripe style="width: 100%">
+      <el-table-column prop="account" label="账号" width="120px"></el-table-column>
+      <el-table-column prop="accountState" label="账号状态" width="120px"></el-table-column>
+      <el-table-column prop="description" label="账号描述" width="250px"></el-table-column>
+      <el-table-column prop="price" label="价格" width="100px"></el-table-column>
+      <el-table-column label="操作" width="60px">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click='remove(scope.$index, tableData)'>删除</el-button>
         </template>
@@ -48,7 +27,7 @@ export default {
         if (accounts[i].accountState === 0) {
           tmpAccountState = '空闲'
         } else {
-          tmpAccountState = '出租中'
+          tmpAccountState = '租用中'
         }
         this.tableData.append({
           account: accounts[i].id,
