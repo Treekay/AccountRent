@@ -52,6 +52,5 @@ export default {
 <style>
 #notify {
   text-decoration-line: none;
-  color: gray;
 }
 </style>

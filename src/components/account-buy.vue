@@ -1,5 +1,5 @@
 <template>
-  <div class="rightPart">
+  <div class="buyPart">
     <h2>租借账号</h2>
     <el-form status-icon label-width="70px" class="demo-ruleForm">
       <el-form-item label="账号" prop="account">
@@ -45,13 +45,16 @@ export default {
 </script>
 
 <style>
-.rightPart {
+.buyPart {
   border: 1px solid lightgray;
   padding: 10px 20px;
   vertical-align: middle;
   float: right;
   width: 30%;
   margin-right: 8%;
+  background: white;
+  margin-top: 60px;
+  /*opacity: .8;*/
 }
 .detailBox {
   height: 40px;
@@ -59,6 +62,6 @@ export default {
   text-align: left;
   line-height: 40px;
   vertical-align: middle;
-  border: lightgray solid 1px;
+  /*border: lightgray solid 1px;*/
 }
 </style>

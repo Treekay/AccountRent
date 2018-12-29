@@ -68,8 +68,10 @@ export default {
   float: left;
   width: 50%;
   margin-left: 8%;
+  /*opacity: .8;*/
 }
 #headline {
   float: left;
+  /*color: lightgray;*/
 }
 </style>

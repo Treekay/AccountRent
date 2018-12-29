@@ -1,5 +1,5 @@
 <template>
-  <div class="rightPart">
+  <div class="createPart">
     <h2>发布账号</h2>
     <el-form status-icon label-width="70px" class="demo-ruleForm">
       <el-form-item label="账号">
@@ -54,7 +54,7 @@ export default {
 </script>
 
 <style>
-.rightPart {
+.createPart {
   border: 1px solid lightgray;
   padding: 10px 20px;
   vertical-align: middle;
@@ -62,5 +62,8 @@ export default {
   width: 30%;
   margin-right: 8%;
   margin-top: 20px;
+  background: white;
+  margin-top: 60px;
+  /*opacity: .8;*/
 }
 </style>
