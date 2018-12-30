@@ -54,9 +54,6 @@ export default {
       if (this.user.length === 0) {
         this.notify('通知', '用户名不能为空')
         return false
-      } else if (this.user.length < 5) {
-        this.notify('通知', '用户名长度小于5')
-        return false
       } else {
         return true
       }
@@ -97,13 +94,15 @@ export default {
     async signIn (formName) {
       if (this.checkUser() && this.checkPass()) {
         const self = this
-        let exist = await self.$instance.checkUserExist(self.user)
+        let exist = await self.$instance.getUserExist(self.user)
         if (exist === true) {
-          let truePassword = await self.$instance.loginCheck(self.user)
+          let truePassword = await self.$instance.getUserPassword(self.user)
           if (truePassword === self.pass) {
-            self.$username = self.user
-            self.$password = self.pass
-            self.$useraddr = await self.$instance.getUserAddress(self.user)
+            console.log('登录成功')
+            self.notify('通知', '登录成功')
+            self.$user.$username = self.user
+            self.$user.$password = self.pass
+            self.$user.$useraddr = await self.$instance.getUserAddress(self.user)
             self.$router.push('/homePage')
           } else {
             self.notify('通知', '密码错误')
@@ -116,14 +115,16 @@ export default {
     async signUp (formName) {
       if (this.checkUser() && this.checkPass() && this.checkPass2()) {
         const self = this
-        let exist = await self.$instance.checkUserExist(self.user)
+        let exist = await self.$instance.getUserExist(self.user)
         if (exist === false) {
           let newAccountAddress = await self.$web3.eth.personal.newAccount(this.pass)
+          await this.$web3.eth.personal.unlockAccount(this.$sponsor, '')
           self.$instance.regist(self.user, self.pass, newAccountAddress, { from: self.$sponsor }).then(() => {
+            console.log('注册成功')
             self.notify('通知', '注册成功')
-            self.$username = self.user
-            self.$password = self.pass
-            self.$useraddr = newAccountAddress
+            self.$user.$username = self.user
+            self.$user.$password = self.pass
+            self.$user.$useraddr = newAccountAddress
             self.$router.push('/homePage')
           })
         } else {

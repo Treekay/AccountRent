@@ -6,12 +6,11 @@ import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import web3Plugin from './plugins/web3'
+import User from './User'
 
 Vue.use(ElementUI)
 Vue.use(web3Plugin)
-Vue.prototype.$username = ''
-Vue.prototype.$password = ''
-Vue.prototype.$useraddr = ''
+Vue.prototype.$user = User
 
 /* eslint-disable no-new */
 new Vue({

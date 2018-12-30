@@ -1,7 +1,7 @@
 <template>
   <div class="leftPart">
     <h2 id="headline">我的账号</h2>
-    <el-table :data="tableData" stripe style="width: 100%">
+    <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="account" label="账号" width="120px"></el-table-column>
       <el-table-column prop="accountState" label="账号状态" width="120px"></el-table-column>
       <el-table-column prop="description" label="账号描述" width="250px"></el-table-column>
@@ -18,33 +18,35 @@
 <script>
 export default {
   name: 'accountMine',
-  data () {
-    return {
-      tableData: this.init()
-    }
-  },
-  methods: {
-    async init () {
-      let tableData = []
-      let accounts = await this.$instance.getAccounts()
-      for (let i = 0; i < accounts.length; i++) {
-        if (accounts[i].ownerAddress === this.$useraddr) {
+  mounted: async function () {
+    let accounts = await this.$instance.getAccountList()
+    for (let i = 0; i < accounts.length; i++) {
+      let accountExist = await this.$insatnce.$existAccount(accounts[i])
+      if (accountExist) {
+        let tmpAccount = await this.$instance.accountPool(accounts[i])
+        if (tmpAccount.ownerAddress === this.$user.$useraddr) {
           let tmpAccountState
-          if (accounts[i].accountState === 0) {
+          if (tmpAccount.accountState === 0) {
             tmpAccountState = '空闲'
           } else {
             tmpAccountState = '租用中'
           }
-          tableData.append({
-            account: accounts[i].id,
+          this.tableData.append({
+            account: tmpAccount.id,
             accountState: tmpAccountState,
-            description: accounts[i].description,
-            price: accounts[i].price
+            description: tmpAccount.description,
+            price: tmpAccount.price
           })
         }
       }
-      return tableData
-    },
+    }
+  },
+  data () {
+    return {
+      tableData: []
+    }
+  },
+  methods: {
     notify (_title, _msg) {
       this.$notify({
         title: _title,
@@ -53,8 +55,8 @@ export default {
     },
     async remove (index, rows) {
       if (rows[index].accountState === '空闲') {
-        await this.$web3.eth.unlockAccount(this.$useraddr, this.$password)
-        await this.$instance.removeAccount(rows[index].account, { from: this.$useraddr })
+        await this.$web3.eth.unlockAccount(this.$user.$useraddr, this.$user.$password)
+        await this.$instance.removeAccount(rows[index].account, { from: this.$user.$useraddr })
         rows.splice(index, 1)
       } else {
         this.notify('通知', '账号正在被租用, 不能删除')
@@ -69,10 +71,10 @@ export default {
   float: left;
   width: 50%;
   margin-left: 8%;
-  /*opacity: .8;*/
+  opacity: .8;
 }
 #headline {
   float: left;
-  /*color: lightgray;*/
+  color: gray;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <h2>租借请求</h2>
-    <el-table :data="tableData" stripe style="width: 100%">
+    <h2 id="request">租借请求</h2>
+    <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="account" label="账号" width="120px"></el-table-column>
       <el-table-column prop="rentTime" label="租借时长" width="150px"></el-table-column>
       <el-table-column prop="cost" label="金额" width="120px"></el-table-column>
@@ -19,39 +19,40 @@
 <script>
 export default {
   name: 'notify',
-  data () {
-    return {
-      tableData: this.init()
-    }
-  },
-  methods: {
-    async init () {
-      let tableData = []
-      let tmpRents = await this.$instance.getRents()
-      for (var i = 0; i < tmpRents.length; i++) {
-        if (tmpRents[i].state === 0) {
-          let owner = await this.$instance.getAccount(tmpRents[i].id)
-          let ownerAddress = await this.$instance.getUserAddress(owner)
-          if (ownerAddress === this.$useraddr) {
-            tableData.append({
-              account: tmpRents[i].id,
-              rentTime: tmpRents[i].rentTime,
-              cost: tmpRents[i].cost,
-              renter: tmpRents[i].renterAddress
+  mounted: async function () {
+    let rents = await this.$instance.getRentList()
+    for (var i = 0; i < rents.length; i++) {
+      let exist = await this.$instance.existRent(rents[i])
+      if (exist) {
+        let tmpRent = await this.$instance.rentPool(rents[i])
+        if (tmpRent.state === 0) {
+          let ownerAddress = await this.$instance.accountPool(tmpRent.id).ownerAddress
+          if (ownerAddress === this.$user.$useraddr) {
+            this.tableData.append({
+              account: tmpRent.id,
+              rentTime: tmpRent.rentTime,
+              cost: tmpRent.cost,
+              renter: tmpRent.renterAddress
             })
           }
         }
       }
-      return tableData
-    },
+    }
+  },
+  data () {
+    return {
+      tableData: []
+    }
+  },
+  methods: {
     async agree (index, rows) {
-      await this.$web3.eth.unlockAccount(this.$useraddr, this.$password)
-      await this.$instance.confirmRent(rows[index].account, { from: this.$useraddr })
+      await this.$web3.eth.personal.unlockAccount(this.$user.$useraddr, this.$user.$password)
+      await this.$instance.confirmRent(rows[index].account, { from: this.$user.$useraddr })
       rows.splice(index, 1)
     },
     async disagree (index, rows) {
-      await this.$web3.eth.unlockAccount(this.$useraddr, this.$password)
-      await this.$instance.refuseRent(rows[index].account, { from: this.$useraddr })
+      await this.$web3.eth.personal.unlockAccount(this.$user.$useraddr, this.$user.$password)
+      await this.$instance.refuseRent(rows[index].account, { from: this.$user.$useraddr })
       rows.splice(index, 1)
     }
   }
