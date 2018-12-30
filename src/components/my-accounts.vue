@@ -31,7 +31,7 @@ export default {
           } else {
             tmpAccountState = '租用中'
           }
-          this.tableData.append({
+          this.tableData.push({
             account: tmpAccount.id,
             accountState: tmpAccountState,
             description: tmpAccount.description,

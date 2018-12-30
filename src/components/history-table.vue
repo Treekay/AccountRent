@@ -41,7 +41,7 @@ export default {
             } else {
               tmpRentState = '使用中'
             }
-            this.tableData.append({
+            this.tableData.push({
               account: tmpAccount.id,
               rentType: tmpRentType,
               startTime: tmpRent.beginTime,

@@ -20,7 +20,7 @@ export default {
       if (accountExist) {
         let tmpAccount = await this.$instance.accountPool(accounts[i])
         if (tmpAccount.state === 0) {
-          this.tableData.append({
+          this.tableData.push({
             account: tmpAccount.id,
             accountType: tmpAccount.accountType,
             description: tmpAccount.description,

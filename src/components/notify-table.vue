@@ -28,7 +28,7 @@ export default {
         if (tmpRent.state === 0) {
           let ownerAddress = await this.$instance.accountPool(tmpRent.id).ownerAddress
           if (ownerAddress === this.$user.$useraddr) {
-            this.tableData.append({
+            this.tableData.push({
               account: tmpRent.id,
               rentTime: tmpRent.rentTime,
               cost: tmpRent.cost,
